@@ -177,14 +177,11 @@ export function BaseTable<T extends object>({
                   }}
                   _hover={{
                     cursor: enableRowSelection ? "pointer" : undefined,
-                    background:
+                    color:
                       enableRowSelection && !(selectedId && row.getIsSelected())
-                        ? "gray.800"
+                        ? "teal.300"
                         : undefined
                   }}
-                  background={
-                    selectedId && row.getIsSelected() ? "teal.50" : undefined
-                  }
                 >
                   {row.getVisibleCells().map(cell => {
                     const meta: any = cell.column.columnDef.meta;

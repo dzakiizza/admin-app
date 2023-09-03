@@ -1,14 +1,10 @@
 "use client";
 
-import { Stack } from "@chakra-ui/react";
-import { useProductsContext } from "./provider";
-import PageCard from "@/components/page-card";
-import BaseContainer from "@/components/base-container";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Product } from "@/app/api/type";
-import useGetColumns from "@/hooks/useGetColumns";
 import { BaseTable } from "@/components/base-table";
+import PageCard from "@/components/page-card";
 import TableWrapper from "@/components/table-wrapper";
+import useGetColumns from "@/hooks/useGetColumns";
+import { useProductsContext } from "./provider";
 
 const initialColumnList = [
   { id: "title", label: "Product Name" },
@@ -40,14 +36,9 @@ const ProductPage = () => {
     }));
   };
 
-  console.log(state);
-
   return (
-    <PageCard title="All Product" subtitle="Show all list of products">
-      <TableWrapper
-        isEmpty={false}
-        isLoading={status.loading}
-      >
+    <PageCard title="All Products" subtitle="Show all list of products">
+      <TableWrapper isEmpty={false} isLoading={status.loading}>
         <BaseTable
           handlePageChanged={handlePaginate}
           initialState={{
@@ -58,7 +49,6 @@ const ProductPage = () => {
           manualPagination={true}
           pageCount={Math.ceil(total / limit)}
           totalItems={total}
-          // onRowClick={e => router.push(pathname + `/chats/${e.customer_id}`)}
         />
       </TableWrapper>
     </PageCard>

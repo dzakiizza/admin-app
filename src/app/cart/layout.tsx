@@ -1,9 +1,10 @@
 import React from "react";
+import { CartsProvider } from "./provider";
 
 export default function CarttLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <CartsProvider>{children}</CartsProvider>;
 }

@@ -21,6 +21,7 @@ const PageHeader = () => {
   const pageTitle = segment || "Page title";
   const hasBackButton = segments.length > 1;
   const router = useRouter();
+
   return (
     <Stack spacing={3} py={5}>
       <Breadcrumb
@@ -34,9 +35,11 @@ const PageHeader = () => {
         </BreadcrumbItem>
         {segments.map((segment, i) => (
           <BreadcrumbItem key={i}>
-            <Text>
-              {segment[0].toUpperCase() + segment.slice(1)}
-            </Text>
+            {i < 1 ? (
+              <Text>{segment[0].toUpperCase() + segment.slice(1)}</Text>
+            ) : (
+              <Text>Detail</Text>
+            )}
           </BreadcrumbItem>
         ))}
       </Breadcrumb>

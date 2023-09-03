@@ -16,7 +16,7 @@ type ContextType = {
   state: {
     query: QueryParams;
   };
-  data: ProductsQueryResponse | any;
+  data: ProductsQueryResponse
   status: {
     loading: boolean;
     fetching: boolean;
@@ -63,7 +63,8 @@ const Store = (props: StoreProps) => {
     keepPreviousData: true
   });
 
-  const products = itemsQuery.data || [];
+  const products = itemsQuery.data || initialValues.data
+  
   return {
     state,
     setState,
