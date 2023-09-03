@@ -2,11 +2,10 @@
 "use client";
 
 import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Flex } from "@chakra-ui/react";
 import React from "react";
 import theme from "@/theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Scrollbars from "rc-scrollbars";
 import NextTopLoader from "nextjs-toploader";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -28,9 +27,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ChakraProvider theme={theme}>
         <NextTopLoader showSpinner={true} color={theme.colors.blue?.["400"]} />
         <QueryClientProvider client={queryClient}>
-          <Scrollbars autoHide autoHeight autoHeightMin={"100vh"}>
+          <Flex h="100vh" w="100vw" flexDir="column">
             {children}
-          </Scrollbars>
+          </Flex>
         </QueryClientProvider>
       </ChakraProvider>
     </CacheProvider>

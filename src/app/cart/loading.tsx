@@ -3,8 +3,8 @@
 import PageLoadingComponent from "@/components/page-loading";
 import React from "react";
 
-const ProductLoading = () => {
+const CartLoading = () => {
   return <PageLoadingComponent />;
 };
 
-export default ProductLoading;
+export default CartLoading;

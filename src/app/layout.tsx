@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 import Header from "@/components/header";
-
+import Wrapper from "@/components/wrapper";
+import { PAGE_LIST } from "@/lib/variables";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Header />
-          {children}
+          <Wrapper menu={PAGE_LIST}>{children}</Wrapper>
         </Providers>
       </body>
     </html>

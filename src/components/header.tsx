@@ -1,30 +1,26 @@
 "use client";
 
+import useMovePage from "@/hooks/useMovePage";
+import { PAGE_LIST } from "@/lib/variables";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
   DrawerOverlay,
+  Flex,
   HStack,
   Heading,
   IconButton,
-  Text,
-  VStack,
   useDisclosure
 } from "@chakra-ui/react";
 import Link from "next/link";
-
-const HEADER_MENU = [
-  { title: "Product", link: "/product" },
-  { title: "Cart", link: "/cart" }
-];
+import { SidebarContainer, SidebarList, SidebarListItem } from "./sidebar";
 
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { segment, handleMove } = useMovePage();
   return (
     <HStack
       h="20"
@@ -32,7 +28,7 @@ const Header = () => {
       backdropFilter="auto"
       backdropBlur="8px"
       top="0"
-      bg="blackAlpha.400"
+      bg="black"
       p="4"
     >
       <HStack alignItems="center" gap="4">
@@ -45,37 +41,37 @@ const Header = () => {
           onClick={onOpen}
         />
         <Link href={"/"}>
-          <Heading bgGradient="linear(to-r, blue.400, teal.400)" bgClip="text">
+          <Heading
+            bgGradient="linear(to-r, blue.400, teal.400)"
+            bgClip="text"
+            size="lg"
+          >
             Admin App
           </Heading>
         </Link>
       </HStack>
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent bgGradient="linear(to-b, black,  blue.900)">
           <DrawerCloseButton />
-          <DrawerBody mt="40px">
-            <VStack gap="2" w="full">
-              {HEADER_MENU.map((item, idx) => (
-                <Box
-                  key={idx}
-                  w="full"
-                  borderRadius="8px"
-                  _hover={{ bg: "gray.500" }}
-                  border="1px solid"
-                >
-                  <Link href={item.link} onClick={onClose}>
-                    <Text
-                      p="8px"
-                      _hover={{ cursor: "pointer" }}
-                      fontWeight="semibold"
-                    >
-                      {item.title}
-                    </Text>
-                  </Link>
-                </Box>
-              ))}
-            </VStack>
+          <DrawerBody mt="14" p="0">
+            <SidebarContainer bg="transparent" w="full">
+              <Flex px={4}>
+                <SidebarList>
+                  {PAGE_LIST.map(item => (
+                    <SidebarListItem
+                      key={item.key}
+                      onClick={() => {
+                        handleMove(item.key);
+                        onClose();
+                      }}
+                      text={item.title}
+                      active={segment === item.key}
+                    />
+                  ))}
+                </SidebarList>
+              </Flex>
+            </SidebarContainer>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
