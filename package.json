@@ -22,11 +22,16 @@
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "framer-motion": "^10.16.2",
+    "headless-pagination-react": "^0.1.4",
     "next": "13.4.19",
     "nextjs-toploader": "^1.4.2",
+    "qs": "^6.11.2",
     "rc-scrollbars": "^1.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@types/qs": "^6.9.8"
   }
 }
