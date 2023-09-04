@@ -9,6 +9,7 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Portal,
   Select,
   Stack,
   Table,
@@ -59,7 +60,7 @@ export function BaseTable<T extends object>({
   initialState,
   totalItems,
   handlePageChanged,
-  enableFilter,
+  enableFilter
 }: Partial<TableOptions<T>> & {
   totalItems?: number;
   handlePageChanged?: ({
@@ -71,7 +72,7 @@ export function BaseTable<T extends object>({
   }) => void;
   onRowClick?: (data: T) => void;
   selectedId?: string;
-  enableFilter?: boolean
+  enableFilter?: boolean;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -175,14 +176,16 @@ export function BaseTable<T extends object>({
                               <PopoverTrigger>
                                 <Icon as={SettingsIcon} />
                               </PopoverTrigger>
-                              <PopoverContent>
-                                <PopoverBody>
-                                  <Filter
-                                    column={header.column}
-                                    table={table}
-                                  />
-                                </PopoverBody>
-                              </PopoverContent>
+                              <Portal>
+                                <PopoverContent>
+                                  <PopoverBody>
+                                    <Filter
+                                      column={header.column}
+                                      table={table}
+                                    />
+                                  </PopoverBody>
+                                </PopoverContent>
+                              </Portal>
                             </Popover>
                           ) : null}
                         </Flex>
@@ -342,4 +345,4 @@ const Filter = ({
       />
     </>
   );
-}
+};
