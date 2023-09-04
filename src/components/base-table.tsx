@@ -1,11 +1,15 @@
 "use client";
 
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "@chakra-ui/icons";
 import {
   Flex,
   HStack,
+  Icon,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Select,
-  Spacer,
   Stack,
   Table,
   TableContainer,
@@ -14,22 +18,29 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
-  VStack,
-  chakra,
-  Tooltip
+  VStack
 } from "@chakra-ui/react";
 import {
+  Column,
   ColumnDef,
+  ColumnFiltersState,
   SortingState,
   TableOptions,
+  Table as TableProps,
   flexRender,
   getCoreRowModel,
+  getFacetedMinMaxValues,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
 import React from "react";
+import DebounceInput from "./debounce-input";
 import Pagination from "./pagination";
 
 export type BaseTableProps<Data extends object> = {
@@ -47,7 +58,8 @@ export function BaseTable<T extends object>({
   pageCount,
   initialState,
   totalItems,
-  handlePageChanged
+  handlePageChanged,
+  enableFilter,
 }: Partial<TableOptions<T>> & {
   totalItems?: number;
   handlePageChanged?: ({
@@ -59,9 +71,13 @@ export function BaseTable<T extends object>({
   }) => void;
   onRowClick?: (data: T) => void;
   selectedId?: string;
+  enableFilter?: boolean
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const table = useReactTable({
     columns: columns || [],
     data: data || [],
@@ -72,13 +88,19 @@ export function BaseTable<T extends object>({
     onRowSelectionChange: val => {
       setRowSelection(val);
     },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
-      rowSelection
+      rowSelection,
+      columnFilters
     }
   });
   React.useEffect(() => {
@@ -122,7 +144,6 @@ export function BaseTable<T extends object>({
                       <Th
                         textTransform={"capitalize"}
                         key={header.id}
-                        onClick={header.column.getToggleSortingHandler()}
                         isNumeric={meta?.isNumeric}
                         width={`${header.column.getSize()}px`}
                         p={"3"}
@@ -137,7 +158,7 @@ export function BaseTable<T extends object>({
                             : undefined
                         }
                       >
-                        <Flex>
+                        <Flex gap="3">
                           <Tooltip
                             label={header.column.columnDef.header as string}
                             placement="bottom-start"
@@ -149,15 +170,21 @@ export function BaseTable<T extends object>({
                               )}
                             </Text>
                           </Tooltip>
-                          <chakra.span pl="4">
-                            {header.column.getIsSorted() ? (
-                              header.column.getIsSorted() === "desc" ? (
-                                <TriangleDownIcon aria-label="sorted descending" />
-                              ) : (
-                                <TriangleUpIcon aria-label="sorted ascending" />
-                              )
-                            ) : null}
-                          </chakra.span>
+                          {header.column.getCanFilter() && enableFilter ? (
+                            <Popover autoFocus={false}>
+                              <PopoverTrigger>
+                                <Icon as={SettingsIcon} />
+                              </PopoverTrigger>
+                              <PopoverContent>
+                                <PopoverBody>
+                                  <Filter
+                                    column={header.column}
+                                    table={table}
+                                  />
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                          ) : null}
                         </Flex>
                       </Th>
                     );
@@ -242,5 +269,77 @@ export function BaseTable<T extends object>({
         </Flex>
       </Flex>
     </VStack>
+  );
+}
+
+const Filter = ({
+  column,
+  table
+}: {
+  column: Column<any, unknown>;
+  table: TableProps<any>;
+}) => {
+  const firstValue = table
+    .getPreFilteredRowModel()
+    .flatRows[0]?.getValue(column.id);
+
+  const columnFilterValue = column.getFilterValue();
+
+  const sortedUniqueValues = React.useMemo(
+    () =>
+      typeof firstValue === "number"
+        ? []
+        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
+    [column.getFacetedUniqueValues()]
+  );
+
+  return typeof firstValue === "number" ? (
+    <Flex>
+      <Flex flex={"auto"}>
+        <DebounceInput
+          type="number"
+          min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
+          max={Number(column.getFacetedMinMaxValues()?.[1] ?? "")}
+          value={(columnFilterValue as [number, number])?.[0] ?? ""}
+          onChange={value =>
+            column.setFilterValue((old: [number, number]) => [value, old?.[1]])
+          }
+          placeholder={`Min ${
+            column.getFacetedMinMaxValues()?.[0]
+              ? `(${column.getFacetedMinMaxValues()?.[0]})`
+              : ""
+          }`}
+        />
+        <DebounceInput
+          type="number"
+          min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
+          max={Number(column.getFacetedMinMaxValues()?.[1] ?? "")}
+          value={(columnFilterValue as [number, number])?.[1] ?? ""}
+          onChange={value =>
+            column.setFilterValue((old: [number, number]) => [old?.[0], value])
+          }
+          placeholder={`Max ${
+            column.getFacetedMinMaxValues()?.[1]
+              ? `(${column.getFacetedMinMaxValues()?.[1]})`
+              : ""
+          }`}
+        />
+      </Flex>
+    </Flex>
+  ) : (
+    <>
+      <datalist id={column.id + "list"}>
+        {sortedUniqueValues.map((value: any) => (
+          <option value={value} key={value} />
+        ))}
+      </datalist>
+      <DebounceInput
+        type="text"
+        value={(columnFilterValue ?? "") as string}
+        onChange={value => column.setFilterValue(value)}
+        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        list={column.id + "list"}
+      />
+    </>
   );
 }

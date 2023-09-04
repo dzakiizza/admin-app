@@ -26,6 +26,7 @@ const ProductPage = () => {
     <PageCard title="All Products" subtitle="Show all list of products">
       <Flex w={{base: "full", md: "xs", lg: "xs"}} mb="5">
         <SearchInput
+          placeholder="Search product..."
           handleSearch={handler.handleSearch}
           handleClearSearch={handler.handleClearSearch}
         />
@@ -41,6 +42,7 @@ const ProductPage = () => {
           manualPagination={true}
           pageCount={Math.ceil(total / limit)}
           totalItems={total}
+          enableFilter
         />
       </TableWrapper>
     </PageCard>

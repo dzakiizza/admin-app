@@ -33,6 +33,10 @@ const SearchInput: React.FC<
               handleSearch(state);
             }
           }}
+          borderColor={"gray.500"}
+          _placeholder={{
+            color: "gray.500"
+          }}
           {...props}
         />
         <InputRightElement
