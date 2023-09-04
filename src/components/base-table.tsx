@@ -103,11 +103,11 @@ export function BaseTable<T extends object>({
 
   return (
     <VStack spacing="6">
-      <TableContainer>
+      <TableContainer w="full">
         <Stack spacing={4} gap={"34px"}>
           <Table
             __css={{
-              tableLayout: "fixed",
+              tableLayout: "auto",
               width: "full"
             }}
             variant={"striped"}

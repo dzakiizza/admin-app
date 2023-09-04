@@ -18,31 +18,16 @@ const initialColumnList = [
 const CartPage = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { data, state, status, setState } = useCartsContext();
+  const { data, state, status, handler } = useCartsContext();
   const columns = useGetColumns(initialColumnList);
   const { limit, skip } = state.query;
   const { carts, total } = data.items;
 
-  const handlePaginate = ({
-    pageSize,
-    pageIndex
-  }: {
-    pageSize: number;
-    pageIndex: number;
-  }) => {
-    setState({
-      query: {
-        skip: pageIndex * pageSize,
-        limit: pageSize
-      }
-    });
-  };
-
   return (
     <PageCard title="All Carts" subtitle="Show all list of carts">
-      <TableWrapper isEmpty={false} isLoading={status.items.loading}>
+      <TableWrapper isEmpty={!carts.length} isLoading={status.items.loading}>
         <BaseTable
-          handlePageChanged={handlePaginate}
+          handlePageChanged={handler.handlePaginate}
           initialState={{
             pagination: { pageIndex: skip / limit, pageSize: limit }
           }}

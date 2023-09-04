@@ -6,7 +6,7 @@ import { getCart, getCarts } from "../api/cart";
 import { Cart, CartsQueryResponse, QueryParams } from "../api/type";
 
 interface StoreProps {
-  id?: number;
+  id?: string;
 }
 
 interface ProviderProps extends StoreProps {
@@ -19,8 +19,8 @@ type ContextType = {
     query: QueryParams;
   };
   data: {
-    items: CartsQueryResponse
-    item: Cart
+    items: CartsQueryResponse;
+    item: Cart;
   };
   status: {
     items: {
@@ -31,6 +31,15 @@ type ContextType = {
       loading: boolean;
       fetching: boolean;
     };
+  };
+  handler: {
+    handlePaginate: ({
+      pageSize,
+      pageIndex
+    }: {
+      pageSize: number;
+      pageIndex: number;
+    }) => void;
   };
 };
 
@@ -48,7 +57,7 @@ const initialValues: ContextType = {
     },
     item: {
       id: 0,
-      prodcuts: [],
+      products: [],
       total: 0,
       discountedTotal: 0,
       userId: 0,
@@ -65,6 +74,9 @@ const initialValues: ContextType = {
       loading: false,
       fetching: false
     }
+  },
+  handler: {
+    handlePaginate: () => {}
   }
 };
 
@@ -92,13 +104,29 @@ const Store = (props: StoreProps) => {
   });
 
   const itemQuery = useQuery({
-    queryKey: ["carts", { ...state.query }],
-    queryFn: () => getCart({ id: props.id || 1 }),
-    enabled: !!props.id
+    queryKey: ["cart", { ...state.query }],
+    queryFn: () => getCart({ id: props.id || "1" }),
+    enabled: !!props.id,
+    keepPreviousData: true
   });
 
-  const items = itemsQuery.data || initialValues.data.items 
-  const item = itemQuery.data || initialValues.data.item
+  const items = itemsQuery.data || initialValues.data.items;
+  const item = itemQuery.data || initialValues.data.item;
+
+  const handlePaginate = ({
+    pageSize,
+    pageIndex
+  }: {
+    pageSize: number;
+    pageIndex: number;
+  }) => {
+    setState({
+      query: {
+        skip: pageIndex * pageSize,
+        limit: pageSize
+      }
+    });
+  };
 
   return {
     state,
@@ -116,6 +144,9 @@ const Store = (props: StoreProps) => {
         loading: itemQuery.isLoading,
         fetching: itemQuery.isFetching
       }
+    },
+    handler: {
+      handlePaginate
     }
   };
 };

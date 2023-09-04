@@ -21,7 +21,7 @@ export const getCarts = async (props: { query?: QueryParams }) => {
   return json;
 };
 
-export const getCart = async (props: { id: number }) => {
+export const getCart = async (props: { id: string }) => {
   const url = `${getApiUrl()}/carts/${props.id}`;
   const res = await fetch(url, {
     method: "GET",

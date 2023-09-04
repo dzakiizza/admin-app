@@ -16,10 +16,21 @@ type ContextType = {
   state: {
     query: QueryParams;
   };
-  data: ProductsQueryResponse
+  data: ProductsQueryResponse;
   status: {
     loading: boolean;
     fetching: boolean;
+  };
+  handler: {
+    handlePaginate: ({
+      pageSize,
+      pageIndex
+    }: {
+      pageSize: number;
+      pageIndex: number;
+    }) => void;
+    handleSearch: (value: string) => void;
+    handleClearSearch: () => void;
   };
 };
 
@@ -37,6 +48,11 @@ const initialValues: ContextType = {
   status: {
     loading: false,
     fetching: false
+  },
+  handler: {
+    handlePaginate: () => {},
+    handleSearch: () => {},
+    handleClearSearch: () => {}
   }
 };
 
@@ -63,8 +79,42 @@ const Store = (props: StoreProps) => {
     keepPreviousData: true
   });
 
-  const products = itemsQuery.data || initialValues.data
-  
+  const products = itemsQuery.data || initialValues.data;
+
+  const handlePaginate = ({
+    pageSize,
+    pageIndex
+  }: {
+    pageSize: number;
+    pageIndex: number;
+  }) => {
+    setState(prev => ({
+      query: {
+        ...prev.query,
+        skip: pageIndex * pageSize,
+        limit: pageSize
+      }
+    }));
+  };
+
+  const handleSearch = (value: string) => {
+    setState(prev => ({
+      query: {
+        ...prev.query,
+        q: value
+      }
+    }));
+  };
+
+  const handleClearSearch = () => {
+    setState(prev => ({
+      query: {
+        ...prev.query,
+        q: ""
+      }
+    }));
+  };
+
   return {
     state,
     setState,
@@ -72,6 +122,11 @@ const Store = (props: StoreProps) => {
     status: {
       loading: itemsQuery.isLoading,
       fetching: itemsQuery.isFetching
+    },
+    handler: {
+      handlePaginate,
+      handleSearch,
+      handleClearSearch
     }
   };
 };

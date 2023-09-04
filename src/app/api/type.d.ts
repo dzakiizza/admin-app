@@ -19,7 +19,7 @@ export type ProductCart = {
 
 export type Cart = {
   id: number;
-  prodcuts: ProductCart[];
+  products: ProductCart[];
   total: number;
   discountedTotal: number;
   userId: number;
