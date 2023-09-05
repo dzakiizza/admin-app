@@ -172,9 +172,12 @@ export function BaseTable<T extends object>({
                             </Text>
                           </Tooltip>
                           {header.column.getCanFilter() && enableFilter ? (
-                            <Popover autoFocus={false}>
+                            <Popover>
                               <PopoverTrigger>
-                                <Icon as={SettingsIcon} />
+                                <Icon
+                                  as={SettingsIcon}
+                                  _hover={{ cursor: "pointer" }}
+                                />
                               </PopoverTrigger>
                               <Portal>
                                 <PopoverContent>
@@ -298,7 +301,7 @@ const Filter = ({
 
   return typeof firstValue === "number" ? (
     <Flex>
-      <Flex flex={"auto"}>
+      <Flex flex={"auto"} gap="2">
         <DebounceInput
           type="number"
           min={Number(column.getFacetedMinMaxValues()?.[0] ?? "")}
